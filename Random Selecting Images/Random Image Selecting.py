@@ -4,56 +4,58 @@ import random
 import nibabel as nib
 import matplotlib.pyplot as plt
 import shutil
+import numpy as np
 
-## _Reading Cases from File_
+#* _Reading Cases from File_
 # Define the folder path
 folder_path = r'G:\Academic\Master\Term Fall 2023-Carleton University\Medical Image Processing\Final Project\Brat Dataset\BRaTS 2021 Task 1 Dataset\BraTS2021_Training_Data'
-
 # List the contents of the folder
 folder_contents = os.listdir(folder_path)
 
-## _Selecting Cases Randomly in two Sets_
+#* _Selecting Cases Randomly in two Sets_
 cases_number = len(folder_contents)
-
 # Defining the number of random cases for each set
-first_set_random_number = 12
-second_set_random_number = 15
-
+random_number = [12, 15]
 # Defining the output array that contain the random cases for each set
-set1_random_array = [x for x in range(first_set_random_number)]
-set2_random_array = [x for x in range(second_set_random_number)]
+
+random_array = [[] for x in range(len(random_number))]
 
 # Choosing Random Cases and Putting them in the first set array
-for counter in range(first_set_random_number):
-    
-    set1_random_array[counter] = random.choice(folder_contents) 
+for array_index in range(len(random_number)):
+    for random_counter in range(random_number[array_index]):
+        random_case_name = ''
+        # Check to see if the File is not in the array
+        Flag_unique_random_case_name = False
+        while Flag_unique_random_case_name is not True:
+            # Getting a random case
+            random_case_name = random.choice(folder_contents)  
+            #check the first time
 
-# Choosing Random Cases and Putting them in the second set array
-for counter in range(second_set_random_number):
-    
-    set2_random_array[counter] = random.choice(folder_contents) 
+            if len(random_array[array_index]) == 0:
+                Flag_unique_random_case_name = True
+            else:
+                if random_case_name not in random_array[array_index]:
+                    Flag_unique_random_case_name = True
+
+        random_array[array_index].append(random_case_name)
 
 
-
-## _Creat a Folder Called "Random_Cases" for Setes of Random Cases
+#* _Creat a Folder Called "Random_Cases" for Setes of Random Cases
 # _One Folder Coming Back to Creat the "Random_Cases" Folder_
-
 # Split the path into its components
 folder_components = folder_path.split(os.path.sep)
-
 # Remove the last component (folder)
 Random_Cases_folder_path = os.path.sep.join(folder_components[:-1])
-
 # Adding the Folder name to the end of the adderess
 Random_Cases_folder_path = Random_Cases_folder_path + '\\' + 'Random_Cases'
 # Checking to see if the "Random_Cases" folder exist
 if not os.path.exists(Random_Cases_folder_path):
     os.makedirs(Random_Cases_folder_path)
-
 # Extracting the Content inside the "Random_Cases" folder
 Random_Cases_folder_contents = os.listdir(Random_Cases_folder_path)
 
-## _Creating "Cases_x" Folder_
+
+#* _Creating "Cases_x" Folder_
 Cases_folder_path = Random_Cases_folder_path = Random_Cases_folder_path + '\\' + 'Cases_'
 # Check to see if there is any "Cases_x" folder. if not, creat "Cases_1" folder. if yes, creat a folder with uper x 
 if not Random_Cases_folder_contents:
@@ -81,132 +83,86 @@ else:
     Cases_folder_path = Cases_folder_path + str(max_cases_number+1)
     os.makedirs(Cases_folder_path)
 
-## _Creating "Set1" and "Set2" folder_
-Set1_folder_path = Cases_folder_path + '\\' + 'Set1'
-os.makedirs(Set1_folder_path)
 
-Set2_folder_path = Cases_folder_path + '\\' + 'Set2'
-os.makedirs(Set2_folder_path)
+#* _Creating "Setx" folders and Writing data_
+for set_folder_counter in range(len(random_number)):
+    # Creating "Setx" folder
+    Set_folder_path = Cases_folder_path + '\\' + 'Set' + str(set_folder_counter+1)
+    os.makedirs(Set_folder_path)
+    # Creat case folders "x" from 1 to random_number
+    for random_number_counter in range(random_number[set_folder_counter]):
+        #Each case source path
+        source_case_folder_path = folder_path + '\\' + random_array[set_folder_counter][random_number_counter]
+        source_case_folder_contents = os.listdir(source_case_folder_path)
 
+        #Finding the segmentation metadata name in the source file
+        segmentation_metadata_name = ''
+        for folder_content in source_case_folder_contents:
+            if 'seg' in folder_content:
+                segmentation_metadata_name = folder_content
 
+        #Creating destination each case folder
+        destination_each_case_folder_path = Set_folder_path + '\\' + str(random_number_counter+1)
+        os.makedirs(destination_each_case_folder_path)
 
-## _Copying images to "Set1" and "Set2" folders
-for set1_case_counter in range(first_set_random_number):
-    # Creating Folders of Set1 Cases
-    set1_case_path = Set1_folder_path + '\\' + str(set1_case_counter+1)
-    os.makedirs(set1_case_path)
-    # Addressing the randomlly selected cases for set1 in the dataset
-    case_in_dataset_path = folder_path + '\\' + set1_random_array[set1_case_counter]
+        #! Writing Data 
+        #* 1) Finding a random slide each its segmentation is not empty
+        random_slide_number = 0
+        Flag_segmentation_is_not_empty = False
+        while Flag_segmentation_is_not_empty is False:
+            # A random image between 50~100 slides
+            random_slide_number = random.randint(0, 154)
+            # Segmentation metadata path 
+            segmentation_metadata_path = source_case_folder_path + '\\' + segmentation_metadata_name
+            # Getting segmentation metadata data
+            segmentation_metadata = nib.load(segmentation_metadata_path).get_fdata()
+            # The data of slide of random number only
+            segmentation_slice_data = segmentation_metadata[:, :, random_slide_number]
+            # Checking the sumation of the image to see if the segmentation is empty or not
+            threshold = 0.5
+#           # Convert to binary image
+            binary_slice_data = (segmentation_slice_data > threshold).astype(np.uint8)
 
-    ## Copying the files in Dataset to Set1
-    # Get a list of all files in the source folder
-    files = os.listdir(case_in_dataset_path)
-
-    # Copy each file to the destination folder
-    for file in files:
-        source_file_path = os.path.join(case_in_dataset_path, file)
-        destination_file_path = os.path.join(set1_case_path, file)
-        shutil.copy(source_file_path, destination_file_path)
-    
-
-
-    #* Extracting the images from .nib file into the Set1 and in each 1, 2, 3, ..., 12or15 folder and in "Images" folder
-    # Creat a "Images" folder in each case of set1/2
-    set1_case_images_path = set1_case_path + '\\' + 'Images'
-    os.makedirs(set1_case_images_path)
-    
-    # Reading the metadatas in the Set1\x (case) folder
-    files = os.listdir(set1_case_path)
-
-    # A random image between 50~100 slides
-    Metadata_random_slide = random.randint(50, 100)
-    # Opening each "Metadata" file and extract a random image between 50~100 slides and save in ".png"
-    for file in files:
-        if '.nii' in file:
-            # Reading Data in Metadata
-            Metadata_file_path = set1_case_path + '\\' + file
-            Metadata_file_data = nib.load(Metadata_file_path).get_fdata()
-
-            for slice_index in range(Metadata_file_data.shape[-1]):
-                # Check so see if the Slice index is equal to the random slide
-                if slice_index == Metadata_random_slide:
-                    # Extracting the "random image" to silce_data
-                    slice_data = Metadata_file_data[:, :, slice_index]
-                    
-                    # Check the type of the file (flair, seg, t1, t1ce, t2)
-                    if 'flair' in file:
-                        set1_case_image_path = set1_case_images_path + '\\' + 'flair'
-                    elif 'seg' in file:
-                        set1_case_image_path = set1_case_images_path + '\\' + 'seg'
-                    elif 't1ce' in file:
-                        set1_case_image_path = set1_case_images_path + '\\' + 't1ce'
-                    elif 't1' in file:
-                        set1_case_image_path = set1_case_images_path + '\\' + 't1'
-                    elif 't2' in file:
-                        set1_case_image_path = set1_case_images_path + '\\' + 't2'
-
-                    # Defining the file to save a ".png"
-                    set1_case_image_path = set1_case_image_path + '.png'
-                    plt.imsave(set1_case_image_path, slice_data, cmap='gray')
+            sumation_variable = 0
+            for i in range(240):
+                for j in range(240):
+                    sumation_variable =  sumation_variable + binary_slice_data[i][j]
+            #! Defining the tumor region
+            if sumation_variable > 500:
+                print(sumation_variable, (random_number_counter+1))
+                Flag_segmentation_is_not_empty = True
+                # Defining the file to save a ".png"
+                segmentation_image_path = destination_each_case_folder_path + '\\' + 'seg.png'
+                plt.imsave(segmentation_image_path, binary_slice_data, cmap='gray')
 
 
     
-for set2_case_counter in range(second_set_random_number):
-    # Creating Folders of Set2 Cases
-    set2_case_path = Set2_folder_path + '\\' + str(set2_case_counter+1)
-    os.makedirs(set2_case_path)
-    # Addressing the randomlly selected cases for set2 in the dataset
-    case_in_dataset_path = folder_path + '\\' + set2_random_array[set2_case_counter]
+        #* Writing {'flair', 't1ce', 't1', 't2'}
+        segmentation_metadata_name = ''
+        file_name_type = ''
+        for folder_content in source_case_folder_contents:
+            Flag_writting_is_ok = False
+            if 'flair' in folder_content:
+                Flag_writting_is_ok = True
+                file_name_type = 'flair.png'
+            elif 't1ce' in folder_content:
+                Flag_writting_is_ok = True
+                file_name_type = 't1ce.png'
+            elif 't1' in folder_content:
+                Flag_writting_is_ok = True
+                file_name_type = 't1.png'
+            elif 't2' in folder_content:
+                Flag_writting_is_ok = True
+                file_name_type = 't2.png'
 
-    ## Copying the files in Dataset to Set2
-    # Get a list of all files in the source folder
-    files = os.listdir(case_in_dataset_path)
+            if Flag_writting_is_ok is True:
+                segmentation_metadata_name = folder_content
+                segmentation_metadata_path = source_case_folder_path + '\\' + segmentation_metadata_name
+                # Getting segmentation metadata data
+                segmentation_metadata = nib.load(segmentation_metadata_path).get_fdata()
+                # The data of slide of random number only
+                segmentation_slice_data = segmentation_metadata[:, :, random_slide_number]
+                # Copying the file to the pass
+                segmentation_image_path = destination_each_case_folder_path + '\\' + file_name_type
+                plt.imsave(segmentation_image_path, segmentation_slice_data, cmap='gray')
 
-    # Copy each file to the destination folder
-    for file in files:
-        source_file_path = os.path.join(case_in_dataset_path, file)
-        destination_file_path = os.path.join(set2_case_path, file)
-        shutil.copy(source_file_path, destination_file_path)
-
-
-
-    #* Extracting the images from .nib file into the Set1 and in each 1, 2, 3, ..., 12or15 folder and in "Images" folder
-    # Creat a "Images" folder in each case of set1/2
-    set2_case_images_path = set2_case_path + '\\' + 'Images'
-    os.makedirs(set2_case_images_path)
-    
-    # Reading the metadatas in the Set2\x (case) folder
-    files = os.listdir(set2_case_path)
-
-    # A random image between 50~100 slides
-    Metadata_random_slide = random.randint(50, 100)
-    # Opening each "Metadata" file and extract a random image between 50~100 slides and save in ".png"
-    for file in files:
-        if '.nii' in file:
-            # Reading Data in Metadata
-            Metadata_file_path = set2_case_path + '\\' + file
-            Metadata_file_data = nib.load(Metadata_file_path).get_fdata()
-
-
-            for slice_index in range(Metadata_file_data.shape[-1]):
-                # Check so see if the Slice index is equal to the random slide
-                if slice_index == Metadata_random_slide:
-                    # Extracting the "random image" to silce_data
-                    slice_data = Metadata_file_data[:, :, slice_index]
-                    
-                    # Check the type of the file (flair, seg, t1, t1ce, t2)
-                    if 'flair' in file:
-                        set2_case_image_path = set2_case_images_path + '\\' + 'flair'
-                    elif 'seg' in file:
-                        set2_case_image_path = set2_case_images_path + '\\' + 'seg'
-                        print(slice_data)
-                    elif 't1ce' in file:
-                        set2_case_image_path = set2_case_images_path + '\\' + 't1ce'
-                    elif 't1' in file:
-                        set2_case_image_path = set2_case_images_path + '\\' + 't1'
-                    elif 't2' in file:
-                        set2_case_image_path = set2_case_images_path + '\\' + 't2'
-
-                    # Defining the file to save a ".png"
-                    set2_case_image_path = set2_case_image_path + '.png'
-                    plt.imsave(set2_case_image_path, slice_data, cmap='gray')
