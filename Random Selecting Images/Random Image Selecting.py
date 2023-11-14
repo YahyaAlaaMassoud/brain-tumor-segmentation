@@ -132,20 +132,29 @@ for set_folder_counter in range(len(random_number)):
                 print(sumation_variable, (random_number_counter+1))
                 Flag_segmentation_is_not_empty = True
                 # Defining the file to save a ".png"
-                segmentation_image_path = destination_each_case_folder_path + '\\' + 'seg.png'
+                # Saving the Black and White Image of the 'seg'
+                segmentation_image_path = destination_each_case_folder_path + '\\' + random_array[set_folder_counter][random_number_counter] + '_' + str((random_slide_number+1)) + '_' + 'seg.png'
                 plt.imsave(segmentation_image_path, binary_slice_data, cmap='gray')
+                # Defining the file to save a ".png"
+                segmentation_image_path = destination_each_case_folder_path + '\\' + random_array[set_folder_counter][random_number_counter] + '_' + str((random_slide_number+1)) + '_' + 'seg_original.png'
+                plt.imsave(segmentation_image_path, segmentation_slice_data, cmap='gray')
+                # Copying the 'seg' Metadata
+                case_metadata_path = destination_each_case_folder_path + '\\' + segmentation_metadata_name
+                shutil.copyfile(segmentation_metadata_path, case_metadata_path)
+
 
 
     
         #* Writing {'flair', 't1ce', 't1', 't2'}
         segmentation_metadata_name = ''
         file_name_type = ''
+        # Check the folder file, which is going to be written, is not junk or 'seg' file
         for folder_content in source_case_folder_contents:
             Flag_writting_is_ok = False
             if 'flair' in folder_content:
                 Flag_writting_is_ok = True
                 file_name_type = 'flair.png'
-            elif 't1ce' in folder_content:
+            elif 't1ce' in folder_content: # First should check 't1ce' to avoid wrong segmentation with 't1'
                 Flag_writting_is_ok = True
                 file_name_type = 't1ce.png'
             elif 't1' in folder_content:
@@ -154,15 +163,18 @@ for set_folder_counter in range(len(random_number)):
             elif 't2' in folder_content:
                 Flag_writting_is_ok = True
                 file_name_type = 't2.png'
-
+            # The file is one of the {'flair', 't1ce', 't1', 't2'}
             if Flag_writting_is_ok is True:
-                segmentation_metadata_name = folder_content
-                segmentation_metadata_path = source_case_folder_path + '\\' + segmentation_metadata_name
+                metadata_name = folder_content
+                metadata_path = source_case_folder_path + '\\' + metadata_name
                 # Getting segmentation metadata data
-                segmentation_metadata = nib.load(segmentation_metadata_path).get_fdata()
+                metadata = nib.load(metadata_path).get_fdata()
                 # The data of slide of random number only
-                segmentation_slice_data = segmentation_metadata[:, :, random_slide_number]
+                slice_data = metadata[:, :, random_slide_number]
                 # Copying the file to the pass
-                segmentation_image_path = destination_each_case_folder_path + '\\' + file_name_type
-                plt.imsave(segmentation_image_path, segmentation_slice_data, cmap='gray')
+                image_path = destination_each_case_folder_path + '\\' + random_array[set_folder_counter][random_number_counter] + '_' + str((random_slide_number+1)) + '_' + file_name_type
+                plt.imsave(image_path, slice_data, cmap='gray')
+                # Copying the other Metadata
+                case_metadata_path = destination_each_case_folder_path + '\\' + metadata_name
+                shutil.copyfile(metadata_path, case_metadata_path)
 
