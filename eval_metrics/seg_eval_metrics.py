@@ -12,6 +12,10 @@ def IoU(y_true, y_pred):
     :param y_pred: Predicted binary array.
     :return: IoU score.
     """
+    
+    y_true = y_true.astype(bool)
+    y_pred = y_pred.astype(bool)
+    
     intersection = np.logical_and(y_true, y_pred)
     union = np.logical_or(y_true, y_pred)
     iou_score = np.sum(intersection) / np.sum(union)
@@ -25,6 +29,10 @@ def dice_similarity(y_true, y_pred):
     :param y_pred: Predicted binary array.
     :return: Dice similarity score.
     """
+    
+    y_true = y_true.astype(bool)
+    y_pred = y_pred.astype(bool)
+    
     intersection = np.logical_and(y_true, y_pred)
     dice_score = 2. * np.sum(intersection) / (np.sum(y_true) + np.sum(y_pred))
     return dice_score
