@@ -12,6 +12,25 @@ from PIL import Image
 from io import BytesIO
 from pprint import pprint
 from eval_metrics.seg_eval_metrics import IoU, dice_similarity
+from scipy.ndimage import binary_fill_holes
+
+def select_seeds(image, block_size=8, num_seeds=5):
+    rows, cols = image.shape
+    mean_intensities = []
+    block_centers = []
+
+    for i in range(0, rows, block_size):
+        for j in range(0, cols, block_size):
+            block = image[i:i+block_size, j:j+block_size]
+            mean_intensity = np.mean(block)
+            mean_intensities.append(mean_intensity)
+            block_centers.append((i + block_size // 2, j + block_size // 2))
+
+    # Select top 5 blocks based on mean intensity
+    top_blocks = np.argsort(mean_intensities)[-num_seeds:]
+    seeds = [block_centers[i] for i in top_blocks]
+
+    return seeds
 
 
 def region_growing_v1(image, seed=None, threshold=10):
@@ -51,6 +70,14 @@ def region_growing_v1(image, seed=None, threshold=10):
                     if 0 <= nx < rows and 0 <= ny < cols:
                         if abs(int(image[nx, ny]) - int(image[x, y])) < threshold:
                             pixel_list.append((nx, ny))
+                            
+    # Function to perform fill holes operation
+    def fill_holes(segmented_image):
+        # Fill holes using binary fill holes operation
+        filled_image = binary_fill_holes(segmented_image).astype(int)
+        return filled_image
+    
+    segmented = fill_holes(segmented)
 
     return segmented, seed
 
@@ -102,6 +129,14 @@ def region_growing_v2(image, seed=None, threshold_factor=0.1):
                     if 0 <= nx < rows and 0 <= ny < cols:
                         if abs(int(image[nx, ny]) - seed_intensity) < dynamic_threshold:
                             pixel_list.append((nx, ny))
+    
+    # Function to perform fill holes operation
+    def fill_holes(segmented_image):
+        # Fill holes using binary fill holes operation
+        filled_image = binary_fill_holes(segmented_image).astype(int)
+        return filled_image
+    
+    segmented = fill_holes(segmented)
 
     return segmented, seed
 
@@ -149,6 +184,13 @@ def region_growing_v3(image, seed=None, initial_threshold_factor=0.3, adjustment
                         if abs(int(image[nx, ny]) - region_mean) < dynamic_threshold:
                             pixel_list.append((nx, ny))
 
+    # Function to perform fill holes operation
+    def fill_holes(segmented_image):
+        # Fill holes using binary fill holes operation
+        filled_image = binary_fill_holes(segmented_image).astype(int)
+        return filled_image
+    
+    segmented = fill_holes(segmented)
     segmented = (segmented * 255).astype(np.uint8)
 
     return segmented, seed
@@ -185,11 +227,11 @@ def draw_intersection_of_binary_images_v3(image1, image2):
 
 
 
-DATA_DIR = 'Images/Raw Images/'
+DATA_DIR = 'Images/Raw Images/Dataset2/'
 
 for dataset_name in os.listdir(DATA_DIR):
     
-    RESULTS_DIR = 'Images/results/region_growing/' + dataset_name + '/'
+    RESULTS_DIR = 'Images/results_dataset2/region_growing/' + dataset_name + '/'
     
     dataset = {}
     
