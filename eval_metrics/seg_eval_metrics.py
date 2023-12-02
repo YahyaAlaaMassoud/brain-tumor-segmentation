@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def IoU(y_true, y_pred):
+def IoU(y_true, y_pred): # jaccard_similarity
     """
     Calculate the Intersection over Union (IoU) of two numpy arrays.
 
@@ -20,7 +20,7 @@ def IoU(y_true, y_pred):
     return iou_score
 
 
-def dice_similarity(y_true, y_pred):
+def dice_similarity(y_true, y_pred): # similarity_index
     """
     Calculate the Dice Similarity Coefficient for two numpy arrays.
 
@@ -37,13 +37,6 @@ def dice_similarity(y_true, y_pred):
     return dice_score
 
 
-def similarity_index(y_true, y_pred):
-    y_true = y_true.astype(bool)
-    y_pred = y_pred.astype(bool)
-    intersection = np.logical_and(y_true, y_pred)
-    return 2. * np.sum(intersection) / (np.sum(y_true) + np.sum(y_pred))
-
-
 def extra_fraction(y_true, y_pred):
     y_true = y_true.astype(bool)
     y_pred = y_pred.astype(bool)
@@ -53,7 +46,7 @@ def extra_fraction(y_true, y_pred):
     return np.sum(fp) / (np.sum(tp) + np.sum(fn))
 
 
-def overlap_fraction(y_true, y_pred):
+def overlap_fraction(y_true, y_pred): # sensitivity
     y_true = y_true.astype(bool)
     y_pred = y_pred.astype(bool)
     tp = np.logical_and(y_true, y_pred)
@@ -69,10 +62,6 @@ def accuracy(y_true, y_pred):
     return (np.sum(tp) + np.sum(tn)) / y_true.size
 
 
-def sensitivity(y_true, y_pred):
-    return overlap_fraction(y_true, y_pred)
-
-
 def specificity(y_true, y_pred):
     y_true = y_true.astype(bool)
     y_pred = y_pred.astype(bool)
@@ -82,17 +71,11 @@ def specificity(y_true, y_pred):
 
 
 def root_mean_squared_error(y_true, y_pred):
-    y_true = y_true.astype(bool)
-    y_pred = y_pred.astype(bool)
+    y_true = y_true.astype(int)
+    y_pred = y_pred.astype(int)
     return np.sqrt(np.mean((y_true - y_pred) ** 2))
 
 
-def jaccard_similarity(y_true, y_pred):
-    y_true = y_true.astype(bool)
-    y_pred = y_pred.astype(bool)
-    intersection = np.logical_and(y_true, y_pred)
-    union = np.logical_or(y_true, y_pred)
-    return np.sum(intersection) / np.sum(union)
 
 # # Function to create a binary square image with a circle inside
 # def create_circular_mask(h, w, center=None, radius=None):
