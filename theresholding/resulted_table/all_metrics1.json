@@ -1,0 +1,110 @@
+[
+    {
+        "IoU": 0.12602377807133422,
+        "Dice Similarity": 0.0076064423536915966,
+        "Extra Fraction": 6.935010482180293,
+        "Overlap Fraction": 1.0,
+        "Accuracy": 0.8851388888888889,
+        "Specificity": 0.8832044628040815,
+        "RMSE": 32.69038254764099
+    },
+    {
+        "IoU": 0.04474873878005634,
+        "Dice Similarity": 0.007211183140823954,
+        "Extra Fraction": 21.34699853587116,
+        "Overlap Fraction": 1.0,
+        "Accuracy": 0.746875,
+        "Specificity": 0.7438375177890613,
+        "RMSE": 27.663343173874622
+    },
+    {
+        "IoU": 0.10304267522115292,
+        "Dice Similarity": 0.00755558881915413,
+        "Extra Fraction": 8.704716981132075,
+        "Overlap Fraction": 1.0,
+        "Accuracy": 0.8398090277777778,
+        "Specificity": 0.8368058012026883,
+        "RMSE": 34.45916136651229
+    },
+    {
+        "IoU": 0.08367214181167669,
+        "Dice Similarity": 0.007430166185884129,
+        "Extra Fraction": 10.847784200385357,
+        "Overlap Fraction": 0.9913294797687862,
+        "Accuracy": 0.8043576388888889,
+        "Specificity": 0.8009264170291008,
+        "RMSE": 34.10142373412647
+    },
+    {
+        "IoU": 0.18640635126377186,
+        "Dice Similarity": 0.007581885849947197,
+        "Extra Fraction": 4.2933104631217835,
+        "Overlap Fraction": 0.9867066895368782,
+        "Accuracy": 0.8256423611111111,
+        "Specificity": 0.8188463487008757,
+        "RMSE": 51.11212874515315
+    },
+    {
+        "IoU": 0.23131243541164312,
+        "Dice Similarity": 0.007712384895670325,
+        "Extra Fraction": 3.323157110945644,
+        "Overlap Fraction": 1.0,
+        "Accuracy": 0.8450347222222222,
+        "Specificity": 0.8374549295261682,
+        "RMSE": 54.85126701413155
+    },
+    {
+        "IoU": 0.10895132309702711,
+        "Dice Similarity": 0.007251812953238309,
+        "Extra Fraction": 7.7770609318996415,
+        "Overlap Fraction": 0.9562724014336917,
+        "Accuracy": 0.8105902777777778,
+        "Specificity": 0.8069744684636598,
+        "RMSE": 39.5376310726039
+    },
+    {
+        "IoU": 0.14122194143005798,
+        "Dice Similarity": 0.007631226980805456,
+        "Extra Fraction": 6.081052631578947,
+        "Overlap Fraction": 1.0,
+        "Accuracy": 0.7994097222222222,
+        "Specificity": 0.7925673249551167,
+        "RMSE": 46.133854540047075
+    },
+    {
+        "IoU": 0.1937740823362401,
+        "Dice Similarity": 0.00723999386248558,
+        "Extra Fraction": 3.8533464566929134,
+        "Overlap Fraction": 0.9404527559055118,
+        "Accuracy": 0.8619618055555556,
+        "Specificity": 0.8590915634897783,
+        "RMSE": 47.71987324043656
+    },
+    {
+        "IoU": 0.13633572159672466,
+        "Dice Similarity": 0.007126538866923122,
+        "Extra Fraction": 5.841736694677871,
+        "Overlap Fraction": 0.9327731092436975,
+        "Accuracy": 0.9267534722222223,
+        "Specificity": 0.9266779172379848,
+        "RMSE": 28.288269003147654
+    },
+    {
+        "IoU": 0.19908987485779295,
+        "Dice Similarity": 0.0076916315049226445,
+        "Extra Fraction": 4.022857142857143,
+        "Overlap Fraction": 1.0,
+        "Accuracy": 0.8044444444444444,
+        "Specificity": 0.7944525547445256,
+        "RMSE": 56.0034820346021
+    },
+    {
+        "IoU": 0.2600336205085102,
+        "Dice Similarity": 0.0077266121693361205,
+        "Extra Fraction": 2.8456565656565656,
+        "Overlap Fraction": 1.0,
+        "Accuracy": 0.8777256944444445,
+        "Specificity": 0.8722358276643991,
+        "RMSE": 52.65257970228577
+    }
+]
